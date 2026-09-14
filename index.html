@@ -427,9 +427,10 @@
       <div class="hint">Video → link YouTube/Drive. APK/Game → link Drive/GitHub Release. Web → link repo/demo. Dokumen/Foto → link folder Drive. Blender → link gambar hasil render.</div>
     </div>
     <div class="field">
-      <label>Link gambar sampul (opsional)</label>
-      <input id="f-cover" type="text" placeholder="https://... (link gambar/screenshot)">
-      <div class="hint">Khusus foto, paling gampang pakai imgur.com (upload di situ, copy "Direct Link"-nya, biasanya diakhiri .jpg/.png). Kalau kosong, dikasih pola polos sebagai gantinya.</div>
+      <label>Gambar sampul (opsional)</label>
+      <input id="f-cover" type="file" accept="image/png, image/jpeg">
+      <div class="hint">Upload foto dari komputer. Otomatis dikecilkan biar ringan. Kalau kosong, dikasih pola polos sebagai gantinya.</div>
+      <div id="coverPreview" style="margin-top:8px;"></div>
     </div>
     <div class="actions">
       <button class="ghost" id="cancelBtn">Batal</button>
@@ -608,6 +609,34 @@ document.getElementById('lockCopyBtn').onclick = ()=>{
 };
 
 let editingId = null;
+let pendingCoverData = '';
+
+function compressImage(file, maxWidth){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxWidth){ h = Math.round(h * (maxWidth / w)); w = maxWidth; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+document.getElementById('f-cover').onchange = async (e)=>{
+  const file = e.target.files[0];
+  const preview = document.getElementById('coverPreview');
+  if(!file){ pendingCoverData=''; preview.innerHTML=''; return; }
+  preview.innerHTML = '<span style="font-size:12px;color:var(--ink-soft);">Mengecilkan foto...</span>';
+  pendingCoverData = await compressImage(file, 500);
+  preview.innerHTML = `<img src="${pendingCoverData}" style="max-height:70px;border-radius:3px;">`;
+};
 
 document.getElementById('addBtn').onclick = ()=>{
   editingId = null;
@@ -618,6 +647,8 @@ document.getElementById('addBtn').onclick = ()=>{
   document.getElementById('f-desc').value='';
   document.getElementById('f-link').value='';
   document.getElementById('f-cover').value='';
+  document.getElementById('coverPreview').innerHTML='';
+  pendingCoverData = '';
   overlay.style.display='flex';
 };
 
@@ -631,7 +662,9 @@ function openEditForm(id){
   document.getElementById('f-course').value = p.course || '';
   document.getElementById('f-desc').value = p.desc || '';
   document.getElementById('f-link').value = p.link || '';
-  document.getElementById('f-cover').value = p.cover || '';
+  document.getElementById('f-cover').value = '';
+  pendingCoverData = p.cover || '';
+  document.getElementById('coverPreview').innerHTML = p.cover ? `<img src="${p.cover}" style="max-height:70px;border-radius:3px;">` : '';
   overlay.style.display='flex';
 }
 
@@ -646,7 +679,7 @@ document.getElementById('saveBtn').onclick = async ()=>{
     course: document.getElementById('f-course').value.trim(),
     desc: document.getElementById('f-desc').value.trim(),
     link: document.getElementById('f-link').value.trim(),
-    cover: document.getElementById('f-cover').value.trim(),
+    cover: pendingCoverData,
   };
   if(editingId){
     const idx = projects.findIndex(x=>x.id===editingId);
@@ -818,7 +851,7 @@ function playBoopSound(){
     });
   }catch(e){ /* browser tidak dukung audio, abaikan */ }
 }
-const stickerGreetings = ["Hai!","Semangat! ","Cek karya di atas","Halo!","Yeay~"];
+const stickerGreetings = ["Hai! ","Semangat! ","Cek karya di atas ","Halo!","Yeay~", "Arigatou"];
 const stickerSvg = document.getElementById('stickerSvg');
 const stickerBubble = document.getElementById('stickerBubble');
 let stickerBusy = false;
