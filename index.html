@@ -545,10 +545,14 @@ function renderGrid(){
       <p class="desc">${escapeHtml(p.desc || 'Tidak ada deskripsi.')}</p>
       <div class="row">
         ${p.link ? `<a class="link" href="${escapeAttr(p.link)}" target="_blank" rel="noopener">Buka →</a>` : '<span></span>'}
-        <button class="del adminOnly" data-id="${p.id}">hapus</button>
+        <span>
+          <button class="del editBtn adminOnly" data-id="${p.id}" style="margin-right:10px;">edit</button>
+          <button class="del delBtn adminOnly" data-id="${p.id}">hapus</button>
+        </span>
       </div>
     `;
-    card.querySelector('.del').onclick = ()=>deleteProject(p.id);
+    card.querySelector('.delBtn').onclick = ()=>deleteProject(p.id);
+    card.querySelector('.editBtn').onclick = ()=>openEditForm(p.id);
     grid.appendChild(card);
   });
 }
@@ -604,7 +608,11 @@ document.getElementById('lockCopyBtn').onclick = ()=>{
   }).catch(()=>{ document.execCommand('copy'); });
 };
 
+let editingId = null;
+
 document.getElementById('addBtn').onclick = ()=>{
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Tambah Karya';
   document.getElementById('f-title').value='';
   document.getElementById('f-cat').value='Aplikasi & Game';
   document.getElementById('f-course').value='';
@@ -615,6 +623,23 @@ document.getElementById('addBtn').onclick = ()=>{
   pendingCoverData = '';
   overlay.style.display='flex';
 };
+
+function openEditForm(id){
+  const p = projects.find(x=>x.id===id);
+  if(!p) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Karya';
+  document.getElementById('f-title').value = p.title || '';
+  document.getElementById('f-cat').value = p.cat || 'Aplikasi & Game';
+  document.getElementById('f-course').value = p.course || '';
+  document.getElementById('f-desc').value = p.desc || '';
+  document.getElementById('f-link').value = p.link || '';
+  document.getElementById('f-cover').value = '';
+  pendingCoverData = p.cover || '';
+  document.getElementById('coverPreview').innerHTML = p.cover ? `<img src="${p.cover}" style="max-height:70px;border-radius:3px;">` : '';
+  overlay.style.display='flex';
+}
+
 document.getElementById('cancelBtn').onclick = ()=>{ overlay.style.display='none'; };
 
 let pendingCoverData = '';
@@ -633,8 +658,7 @@ document.getElementById('f-cover').onchange = (e)=>{
 document.getElementById('saveBtn').onclick = async ()=>{
   const title = document.getElementById('f-title').value.trim();
   if(!title){ alert('Judul wajib diisi.'); return; }
-  const p = {
-    id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+  const fields = {
     title,
     cat: document.getElementById('f-cat').value,
     course: document.getElementById('f-course').value.trim(),
@@ -642,7 +666,13 @@ document.getElementById('saveBtn').onclick = async ()=>{
     link: document.getElementById('f-link').value.trim(),
     cover: pendingCoverData,
   };
-  projects.push(p);
+  if(editingId){
+    const idx = projects.findIndex(x=>x.id===editingId);
+    if(idx > -1) projects[idx] = { ...projects[idx], ...fields };
+  } else {
+    projects.push({ id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7), ...fields });
+  }
+  editingId = null;
   pendingCoverData = '';
   overlay.style.display='none';
   renderGrid();
@@ -807,7 +837,7 @@ function playBoopSound(){
     });
   }catch(e){ /* browser tidak dukung audio, abaikan */ }
 }
-const stickerGreetings = ["Hai!","Semangat!","Cek karya di atas","Halo!","Yeay~","Arigatou","Gambare"];
+const stickerGreetings = ["Hai! ","Arigatou","Semangat!","Cek karya di atas","Halo!","Yeay~","Gomen","Gambarre"];
 const stickerSvg = document.getElementById('stickerSvg');
 const stickerBubble = document.getElementById('stickerBubble');
 let stickerBusy = false;
