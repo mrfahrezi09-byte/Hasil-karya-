@@ -111,7 +111,6 @@
     margin:-18px -18px 12px;
     width:calc(100% + 36px);
     object-fit:cover;
-    filter:grayscale(100%) contrast(1.05);
     display:block;
     border-bottom:1px solid var(--line);
   }
@@ -626,7 +625,7 @@ document.getElementById('f-cover').onchange = (e)=>{
   const reader = new FileReader();
   reader.onload = (ev)=>{
     pendingCoverData = ev.target.result;
-    preview.innerHTML = `<img src="${pendingCoverData}" style="max-height:70px;border-radius:3px;filter:grayscale(100%);">`;
+    preview.innerHTML = `<img src="${pendingCoverData}" style="max-height:70px;border-radius:3px;">`;
   };
   reader.readAsDataURL(file);
 };
@@ -757,7 +756,7 @@ fetchSharedData().then(()=>{
 });
 
 // --- mode edit rahasia (biar cuma kamu yang bisa nambah/edit/hapus) ---
-const ADMIN_PASSWORD = 'hasilkarya12'; // <-- GANTI kata ini jadi password rahasia kamu sendiri
+const ADMIN_PASSWORD = 'hasilkarya11'; // <-- GANTI kata ini jadi password rahasia kamu sendiri
 function applyAdminState(){
   const unlocked = sessionStorage.getItem('isAdmin') === 'yes';
   document.body.classList.toggle('is-admin', unlocked);
@@ -808,7 +807,7 @@ function playBoopSound(){
     });
   }catch(e){ /* browser tidak dukung audio, abaikan */ }
 }
-const stickerGreetings = ["Hai!","Semangat!","Cek karya di atas","Halo!","Yeay~","Arigatouu"];
+const stickerGreetings = ["Hai!","Semangat!","Cek karya di atas","Halo!","Yeay~","Arigatou","Gambare"];
 const stickerSvg = document.getElementById('stickerSvg');
 const stickerBubble = document.getElementById('stickerBubble');
 let stickerBusy = false;
