@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsip Karya Kuliah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F3F5F9;
+    --card: #FFFFFF;
+    --ink: #0B1220;
+    --ink-soft: #4B5568;
+    --line: #D3DAE6;
+    --accent: #1D4ED8;
+    --accent-soft: #DCE7FB;
+    --pine: #1E3A8A;
+    --pine-soft: #E1EAFB;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 40px;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  header{
+    padding:56px 24px 28px;
+    max-width:920px;
+    margin:0 auto;
+    border-bottom:2px solid var(--ink);
+    position:relative;
+  }
+  header .heroTop{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:6px;
+  }
+  header .avatar{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--ink);
+    flex-shrink:0;
+  }
+  header .kicker{
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:900;
+    font-size:clamp(32px, 5vw, 48px);
+    margin:0 0 10px;
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  h1 .name{ color:var(--accent); font-weight:900; }
+  header p.sub{
+    font-size:16px;
+    color:var(--ink-soft);
+    max-width:560px;
+    line-height:1.5;
+    margin:0 0 14px;
+  }
+  header .stats{
+    font-size:13.5px;
+    color:var(--ink-soft);
+  }
+  header .stats b{ color:var(--ink); }
+  header .stats .dot{ margin:0 8px; }
+  button.editInfo{
+    position:absolute;
+    top:56px; right:24px;
+    background:none;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    padding:8px 14px;
+    border-radius:3px;
+    font-size:13px;
+    font-family:'IBM Plex Sans', sans-serif;
+    cursor:pointer;
+  }
+  button.musicBtn{
+    position:absolute;
+    top:56px; right:150px;
+    background:none;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    width:38px; height:38px;
+    border-radius:3px;
+    font-size:15px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .cover{
+    width:100%;
+    height:130px;
+    border-radius:2px 2px 0 0;
+    margin:-18px -18px 12px;
+    width:calc(100% + 36px);
+    object-fit:cover;
+    filter:grayscale(100%) contrast(1.05);
+    display:block;
+    border-bottom:1px solid var(--line);
+  }
+  .cover-placeholder{
+    height:130px;
+    margin:-18px -18px 12px;
+    width:calc(100% + 36px);
+    background:repeating-linear-gradient(135deg, #E2E8F2, #E2E8F2 10px, #D3DAE6 10px, #D3DAE6 20px);
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#6B7690;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.03em;
+  }
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:28px 0 24px;
+  }
+  .tab{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    padding:9px 16px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    border-radius:3px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .tab.active{ background:var(--ink); color:var(--card); }
+  .tab:hover:not(.active){ background:rgba(0,0,0,0.06); }
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+  .count{ font-size:14px; color:var(--ink-soft); }
+  button.primary{
+    font-family:'IBM Plex Sans', sans-serif;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:11px 20px;
+    font-size:14px;
+    font-weight:600;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  button.primary:hover{ opacity:0.92; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:18px;
+    position:relative;
+    box-shadow:2px 2px 0 rgba(11,18,32,0.06);
+  }
+  .card .tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    color:var(--pine);
+    background:var(--pine-soft);
+    padding:3px 8px;
+    border-radius:2px;
+    margin-bottom:10px;
+  }
+  .card h3{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    margin:0 0 6px;
+    line-height:1.25;
+  }
+  .card .meta{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .card p.desc{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin:0 0 14px;
+  }
+  .card .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .card a.link{
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+    text-decoration:none;
+    border-bottom:1.5px solid var(--accent);
+    padding-bottom:1px;
+  }
+  .card button.del{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:12px;
+    text-decoration:underline;
+  }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    border:1.5px dashed var(--line);
+    border-radius:4px;
+  }
+  .empty h3{ font-family:'Fraunces', serif; color:var(--ink); margin-bottom:6px;}
+
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(11,18,32,0.5);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+    z-index:10;
+  }
+  .modal{
+    background:linear-gradient(165deg, #FFFFFF 0%, #EAF1FC 100%);
+    width:100%; max-width:440px;
+    max-height:75vh;
+    overflow-y:auto;
+    border-radius:12px;
+    padding:30px;
+    border:1px solid var(--line);
+    box-shadow:0 20px 45px rgba(11,18,32,0.25), 0 2px 0 rgba(255,255,255,0.6) inset;
+  }
+  .modal h2{
+    font-family:'Fraunces', serif;
+    font-size:22px;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .modal h2::after{
+    content:'';
+    display:block;
+    width:40px;
+    height:3px;
+    background:var(--accent);
+    border-radius:2px;
+    margin-top:8px;
+    margin-bottom:14px;
+  }
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    padding:9px 10px;
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    background:#ffffff;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(29,78,216,0.15);
+  }
+  .field textarea{ resize:vertical; min-height:60px; }
+  .modal .actions{
+    display:flex; justify-content:flex-end; gap:10px; margin-top:20px;
+  }
+  button.ghost{
+    background:none; border:1.5px solid var(--ink); color:var(--ink);
+    padding:9px 16px; border-radius:3px; font-size:14px; cursor:pointer;
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .hint{ font-size:11.5px; color:var(--ink-soft); margin-top:4px; }
+  .status{ font-size:13px; color:var(--ink-soft); margin-bottom:10px; }
+
+  .adminOnly{ display:none; }
+  body.is-admin .adminOnly{ display:inline-block; }
+  body.is-admin .adminOnly.block{ display:block; }
+
+  @keyframes stickerWiggle{
+    0%{ transform:rotate(-6deg) scale(1); }
+    20%{ transform:rotate(6deg) scale(1.1); }
+    40%{ transform:rotate(-10deg) scale(1.12); }
+    60%{ transform:rotate(8deg) scale(1.08); }
+    80%{ transform:rotate(-4deg) scale(1.03); }
+    100%{ transform:rotate(-6deg) scale(1); }
+  }
+  .sticker.wiggle{ animation:stickerWiggle 0.6s ease; }
+  .sticker{ cursor:pointer; }
+  .stickerBubble{
+    position:fixed;
+    bottom:120px;
+    right:20px;
+    background:var(--ink);
+    color:#fff;
+    font-size:12px;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius:14px;
+    z-index:6;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s, transform .2s;
+    transform:translateY(6px);
+  }
+  .stickerBubble.show{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="musicBtn" id="musicBtn" title="Putar musik latar" style="display:none;">▶</button>
+  <button class="editInfo adminOnly" id="editInfoBtn">Edit Info</button>
+  <div class="kicker">ARSIP PROYEK &amp; HASIL TUGAS KULIAH</div>
+  <div class="heroTop">
+    <img class="avatar" id="avatarImg" alt="Foto profil" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23D3DAE6'/%3E%3Ccircle cx='32' cy='26' r='12' fill='%23FFFFFF'/%3E%3Cpath d='M10 58c2-14 12-20 22-20s20 6 22 20' fill='%23FFFFFF'/%3E%3C/svg%3E">
+    <h1 id="heroTitle">Hasil Karya <span class="name" id="heroName">Saya</span></h1>
+  </div>
+  <p class="sub" id="heroSub">Kumpulan aplikasi, web, video, render, dan dokumen yang dibuat sepanjang masa kuliah.</p>
+  <div class="stats" id="heroStats"></div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" id="tabs"></nav>
+  <div class="toolbar">
+    <span class="count" id="count"></span>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="ghost adminOnly" id="lockBtn" style="padding:9px 16px; font-size:13px;">Kunci Data ke Kode</button>
+      <button class="primary adminOnly" id="addBtn">+ Tambah Karya</button>
+    </div>
+  </div>
+  <div id="status" class="status"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<svg class="sticker" id="stickerSvg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" style="width:100px;transform:rotate(-6deg);filter:drop-shadow(3px 4px 3px rgba(11,18,32,0.25));position:fixed;bottom:16px;right:16px;z-index:5;">
+  <rect x="70" y="-6" width="60" height="20" fill="#ffffff" opacity="0.6" transform="rotate(-4 100 4)"/>
+  <circle cx="100" cy="105" r="82" fill="#ffffff" stroke="#0B1220" stroke-width="5"/>
+  <path d="M22 95 C10 30 60 8 100 8 C140 8 190 30 178 95 C170 60 140 40 100 45 C60 40 30 60 22 95 Z" fill="#0B1220"/>
+  <path d="M55 40 C45 55 42 70 46 85" fill="none" stroke="#0B1220" stroke-width="6" stroke-linecap="round"/>
+  <path d="M145 40 C155 55 158 70 154 85" fill="none" stroke="#0B1220" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="24" cy="108" r="14" fill="#ffffff" stroke="#0B1220" stroke-width="5"/>
+  <circle cx="176" cy="108" r="14" fill="#ffffff" stroke="#0B1220" stroke-width="5"/>
+  <ellipse cx="62" cy="128" rx="12" ry="7" fill="#1D4ED8" opacity="0.25"/>
+  <ellipse cx="138" cy="128" rx="12" ry="7" fill="#1D4ED8" opacity="0.25"/>
+  <ellipse cx="72" cy="112" rx="13" ry="17" fill="#0B1220"/>
+  <circle cx="76" cy="104" r="4.5" fill="#ffffff"/>
+  <ellipse cx="128" cy="112" rx="13" ry="17" fill="#0B1220"/>
+  <circle cx="132" cy="104" r="4.5" fill="#ffffff"/>
+  <path d="M58 90 Q72 82 86 90" fill="none" stroke="#0B1220" stroke-width="4" stroke-linecap="round"/>
+  <path d="M114 90 Q128 82 142 90" fill="none" stroke="#0B1220" stroke-width="4" stroke-linecap="round"/>
+  <path d="M92 142 Q100 150 108 142" fill="none" stroke="#0B1220" stroke-width="4" stroke-linecap="round"/>
+  <path d="M96 6 C90 20 94 30 102 32" fill="none" stroke="#0B1220" stroke-width="5" stroke-linecap="round"/>
+</svg>
+<div class="stickerBubble" id="stickerBubble">Hai! 👋</div>
+
+<div id="overlay" class="overlay" style="display:none;">
+  <div class="modal">
+    <h2 id="modalTitle">Tambah Karya</h2>
+    <div class="field">
+      <label>Judul</label>
+      <input id="f-title" type="text" placeholder="misal: Aplikasi Kasir Toko">
+    </div>
+    <div class="field">
+      <label>Kategori</label>
+      <select id="f-cat">
+        <option value="Aplikasi & Game">Aplikasi & Game</option>
+        <option value="Website">Website</option>
+        <option value="Video">Video</option>
+        <option value="Blender">Blender</option>
+        <option value="Dokumen & Foto">Dokumen & Foto</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Mata Kuliah / Semester (opsional)</label>
+      <input id="f-course" type="text" placeholder="misal: Pemrograman Web · Sem 4">
+    </div>
+    <div class="field">
+      <label>Deskripsi singkat</label>
+      <textarea id="f-desc" placeholder="Ceritakan sedikit tentang karya ini"></textarea>
+    </div>
+    <div class="field">
+      <label>Link file (Google Drive / YouTube / GitHub, dll)</label>
+      <input id="f-link" type="text" placeholder="https://...">
+      <div class="hint">Video → link YouTube/Drive. APK/Game → link Drive/GitHub Release. Web → link repo/demo. Dokumen/Foto → link folder Drive. Blender → link gambar hasil render.</div>
+    </div>
+    <div class="field">
+      <label>Gambar sampul (opsional)</label>
+      <input id="f-cover" type="file" accept="image/png, image/jpeg">
+      <div class="hint">Upload gambar/screenshot dari komputer (PNG/JPG). Ditampilkan hitam-putih otomatis biar polos. Kalau tidak diisi, dikasih pola polos sebagai gantinya.</div>
+      <div id="coverPreview" style="margin-top:8px;"></div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="cancelBtn">Batal</button>
+      <button class="primary" id="saveBtn">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div id="profileOverlay" class="overlay" style="display:none;">
+  <div class="modal">
+    <h2>Edit Info</h2>
+    <div class="field">
+      <label>Nama</label>
+      <input id="p-name" type="text" placeholder="Nama kamu">
+    </div>
+    <div class="field">
+      <label>Foto profil (opsional)</label>
+      <input id="p-photo" type="file" accept="image/png, image/jpeg">
+      <div id="photoPreview" style="margin-top:8px;"></div>
+    </div>
+    <div class="field">
+      <label>Deskripsi singkat</label>
+      <textarea id="p-sub" placeholder="misal: Koleksi proyek video, web, aplikasi, dan render 3D selama kuliah"></textarea>
+    </div>
+    <div class="field">
+      <label>Info tambahan (fakultas, semester, dll — opsional)</label>
+      <input id="p-extra" type="text" placeholder="misal: Fakultas Ilmu Komputer · Semester 4">
+    </div>
+    <div class="field">
+      <label>Link musik latar (opsional)</label>
+      <input id="p-music" type="text" placeholder="https://... (link file mp3, misal dari Google Drive)">
+      <div class="hint">Pakai musik/lagu milik sendiri atau yang bebas hak cipta ya, biar aman. Nanti muncul tombol putar di pojok atas.</div>
+    </div>
+    <div class="field">
+      <label>Link suara stiker (opsional)</label>
+      <input id="p-sticker-sound" type="text" placeholder="https://... (link file mp3/wav pendek)">
+      <div class="hint">Bunyi ini akan diputar tiap stiker chibi di pojok kanan bawah diklik.</div>
+    </div>
+    <div class="actions">
+      <button class="ghost" id="profileCancelBtn">Batal</button>
+      <button class="primary" id="profileSaveBtn">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div id="lockOverlay" class="overlay" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <h2>Kunci Data ke Kode</h2>
+    <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.6; margin-top:0;">
+      Copy semua teks di kotak bawah ini, lalu tempel gantikan 2 baris yang ada tulisan
+      <code>DEFAULT_PROJECTS</code> dan <code>DEFAULT_PROFILE</code> di file index.html kamu (lewat ikon pensil di GitHub), lalu Commit. Setelah itu, SEMUA ORANG yang buka link kamu akan lihat karya-karya ini.
+    </p>
+    <textarea id="lockCodeBox" readonly style="width:100%; min-height:220px; font-family:monospace; font-size:12px; padding:10px; border:1.5px solid var(--line); border-radius:6px; background:#fff;"></textarea>
+    <div class="actions">
+      <button class="ghost" id="lockCloseBtn">Tutup</button>
+      <button class="primary" id="lockCopyBtn">Copy Kode</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgAudio" loop></audio>
+
+<script>
+const CATEGORIES = ["Semua","Aplikasi & Game","Website","Video","Blender","Dokumen & Foto"];
+// DATA BAWAAN — ini yang dilihat SEMUA ORANG secara default.
+// Kalau mau update, klik tombol "Kunci Data ke Kode" di mode edit, lalu ganti isi 2 baris ini (DEFAULT_PROJECTS & DEFAULT_PROFILE) di GitHub.
+const DEFAULT_PROJECTS = [];
+let projects = [];
+let activeTab = "Semua";
+
+const grid = document.getElementById('grid');
+const tabsEl = document.getElementById('tabs');
+const countEl = document.getElementById('count');
+const statusEl = document.getElementById('status');
+const overlay = document.getElementById('overlay');
+
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (cat===activeTab ? ' active':'');
+    b.textContent = cat;
+    b.onclick = ()=>{ activeTab = cat; renderTabs(); renderGrid(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  const list = activeTab==="Semua" ? projects : projects.filter(p=>p.cat===activeTab);
+  countEl.textContent = list.length + " karya" + (activeTab!=="Semua" ? " di " + activeTab : "");
+  grid.innerHTML = '';
+  if(list.length===0){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;"><h3>Belum ada karya di sini</h3><p>Klik "+ Tambah Karya" untuk mulai mengisi arsip.</p></div>';
+    return;
+  }
+  list.slice().reverse().forEach(p=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const coverHtml = p.cover
+      ? `<img class="cover" src="${escapeAttr(p.cover)}" alt="" onerror="this.outerHTML='<div class=&quot;cover-placeholder&quot;>TANPA SAMPUL</div>'">`
+      : `<div class="cover-placeholder">${escapeHtml(p.cat.toUpperCase())}</div>`;
+    card.innerHTML = `
+      ${coverHtml}
+      <span class="tag">${escapeHtml(p.cat)}</span>
+      <h3>${escapeHtml(p.title)}</h3>
+      ${p.course ? `<div class="meta">${escapeHtml(p.course)}</div>` : ''}
+      <p class="desc">${escapeHtml(p.desc || 'Tidak ada deskripsi.')}</p>
+      <div class="row">
+        ${p.link ? `<a class="link" href="${escapeAttr(p.link)}" target="_blank" rel="noopener">Buka →</a>` : '<span></span>'}
+        <button class="del adminOnly" data-id="${p.id}">hapus</button>
+      </div>
+    `;
+    card.querySelector('.del').onclick = ()=>deleteProject(p.id);
+    grid.appendChild(card);
+  });
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s); }
+
+async function loadProjects(){
+  statusEl.textContent = 'Memuat arsip...';
+  try{
+    const raw = localStorage.getItem('projects');
+    projects = raw ? JSON.parse(raw) : [...DEFAULT_PROJECTS];
+  }catch(e){
+    projects = [...DEFAULT_PROJECTS];
+  }
+  statusEl.textContent = '';
+  renderGrid();
+}
+
+async function saveProjects(){
+  try{
+    localStorage.setItem('projects', JSON.stringify(projects));
+  }catch(e){
+    statusEl.textContent = 'Gagal menyimpan: ' + e.message;
+  }
+}
+
+function deleteProject(id){
+  projects = projects.filter(p=>p.id!==id);
+  renderGrid();
+  renderHero();
+  saveProjects();
+}
+
+document.getElementById('lockBtn').onclick = ()=>{
+  const code = `const DEFAULT_PROJECTS = ${JSON.stringify(projects, null, 2)};\nconst DEFAULT_PROFILE = ${JSON.stringify(profile, null, 2)};`;
+  document.getElementById('lockCodeBox').value = code;
+  document.getElementById('lockOverlay').style.display = 'flex';
+};
+document.getElementById('lockCloseBtn').onclick = ()=>{ document.getElementById('lockOverlay').style.display='none'; };
+document.getElementById('lockCopyBtn').onclick = ()=>{
+  const box = document.getElementById('lockCodeBox');
+  box.select();
+  navigator.clipboard.writeText(box.value).then(()=>{
+    document.getElementById('lockCopyBtn').textContent = 'Tersalin ✓';
+    setTimeout(()=>{ document.getElementById('lockCopyBtn').textContent = 'Copy Kode'; }, 1500);
+  }).catch(()=>{ document.execCommand('copy'); });
+};
+
+document.getElementById('addBtn').onclick = ()=>{
+  document.getElementById('f-title').value='';
+  document.getElementById('f-cat').value='Aplikasi & Game';
+  document.getElementById('f-course').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-link').value='';
+  document.getElementById('f-cover').value='';
+  document.getElementById('coverPreview').innerHTML='';
+  pendingCoverData = '';
+  overlay.style.display='flex';
+};
+document.getElementById('cancelBtn').onclick = ()=>{ overlay.style.display='none'; };
+
+let pendingCoverData = '';
+document.getElementById('f-cover').onchange = (e)=>{
+  const file = e.target.files[0];
+  const preview = document.getElementById('coverPreview');
+  if(!file){ pendingCoverData=''; preview.innerHTML=''; return; }
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    pendingCoverData = ev.target.result;
+    preview.innerHTML = `<img src="${pendingCoverData}" style="max-height:70px;border-radius:3px;filter:grayscale(100%);">`;
+  };
+  reader.readAsDataURL(file);
+};
+
+document.getElementById('saveBtn').onclick = async ()=>{
+  const title = document.getElementById('f-title').value.trim();
+  if(!title){ alert('Judul wajib diisi.'); return; }
+  const p = {
+    id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+    title,
+    cat: document.getElementById('f-cat').value,
+    course: document.getElementById('f-course').value.trim(),
+    desc: document.getElementById('f-desc').value.trim(),
+    link: document.getElementById('f-link').value.trim(),
+    cover: pendingCoverData,
+  };
+  projects.push(p);
+  pendingCoverData = '';
+  overlay.style.display='none';
+  renderGrid();
+  renderHero();
+  await saveProjects();
+};
+
+const DEFAULT_PROFILE = { name:'Saya', sub:'Kumpulan aplikasi, web, video, render, dan dokumen yang dibuat sepanjang masa kuliah.', extra:'', music:'', stickerSound:'', photo:'' };
+let profile = { ...DEFAULT_PROFILE };
+const bgAudio = document.getElementById('bgAudio');
+const musicBtn = document.getElementById('musicBtn');
+let isPlaying = false;
+
+function renderMusicBtn(){
+  if(profile.music){
+    musicBtn.style.display = 'flex';
+    bgAudio.src = profile.music;
+  } else {
+    musicBtn.style.display = 'none';
+    bgAudio.pause();
+    bgAudio.src = '';
+    isPlaying = false;
+  }
+}
+musicBtn.onclick = ()=>{
+  if(!profile.music) return;
+  if(isPlaying){
+    bgAudio.pause();
+    musicBtn.textContent = '▶';
+    isPlaying = false;
+  } else {
+    bgAudio.play().catch(()=>{ statusEl.textContent = 'Tidak bisa memutar musik, cek link-nya.'; });
+    musicBtn.textContent = '❚❚';
+    isPlaying = true;
+  }
+};
+
+function renderHero(){
+  document.getElementById('heroName').textContent = profile.name || 'Saya';
+  if(profile.photo){ document.getElementById('avatarImg').src = profile.photo; }
+  document.getElementById('heroSub').textContent = profile.sub || '';
+  const total = projects.length;
+  document.getElementById('heroStats').textContent =
+    (profile.extra ? profile.extra + '  ·  ' : '') + total + ' total karya';
+}
+
+async function loadProfile(){
+  try{
+    const raw = localStorage.getItem('profile');
+    if(raw) profile = JSON.parse(raw);
+  }catch(e){ /* belum ada data, pakai default */ }
+  renderHero();
+  renderMusicBtn();
+}
+
+async function saveProfile(){
+  try{
+    localStorage.setItem('profile', JSON.stringify(profile));
+  }catch(e){
+    statusEl.textContent = 'Gagal menyimpan info: ' + e.message;
+  }
+}
+
+const profileOverlay = document.getElementById('profileOverlay');
+let pendingPhotoData = '';
+document.getElementById('p-photo').onchange = (e)=>{
+  const file = e.target.files[0];
+  const preview = document.getElementById('photoPreview');
+  if(!file){ pendingPhotoData=''; preview.innerHTML=''; return; }
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    pendingPhotoData = ev.target.result;
+    preview.innerHTML = `<img src="${pendingPhotoData}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);">`;
+  };
+  reader.readAsDataURL(file);
+};
+document.getElementById('editInfoBtn').onclick = ()=>{
+  document.getElementById('p-name').value = profile.name || '';
+  document.getElementById('p-sub').value = profile.sub || '';
+  document.getElementById('p-extra').value = profile.extra || '';
+  document.getElementById('p-music').value = profile.music || '';
+  document.getElementById('p-sticker-sound').value = profile.stickerSound || '';
+  document.getElementById('p-photo').value = '';
+  pendingPhotoData = '';
+  const preview = document.getElementById('photoPreview');
+  preview.innerHTML = profile.photo ? `<img src="${profile.photo}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);">` : '';
+  profileOverlay.style.display = 'flex';
+};
+document.getElementById('profileCancelBtn').onclick = ()=>{ profileOverlay.style.display='none'; };
+document.getElementById('profileSaveBtn').onclick = async ()=>{
+  profile.name = document.getElementById('p-name').value.trim() || 'Saya';
+  profile.sub = document.getElementById('p-sub').value.trim();
+  profile.extra = document.getElementById('p-extra').value.trim();
+  profile.music = document.getElementById('p-music').value.trim();
+  profile.stickerSound = document.getElementById('p-sticker-sound').value.trim();
+  if(pendingPhotoData) profile.photo = pendingPhotoData;
+  profileOverlay.style.display = 'none';
+  renderHero();
+  renderMusicBtn();
+  await saveProfile();
+};
+
+renderTabs();
+loadProfile();
+loadProjects().then(renderHero);
+
+// --- mode edit rahasia (biar cuma kamu yang bisa nambah/edit/hapus) ---
+const ADMIN_PASSWORD = 'hasilkarya1'; // <-- GANTI kata ini jadi password rahasia kamu sendiri
+function applyAdminState(){
+  const unlocked = sessionStorage.getItem('isAdmin') === 'yes';
+  document.body.classList.toggle('is-admin', unlocked);
+}
+(function checkAdminLink(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('edit') === '1' && sessionStorage.getItem('isAdmin') !== 'yes'){
+    const input = prompt('Masukkan password untuk mode edit:');
+    if(input === ADMIN_PASSWORD){
+      sessionStorage.setItem('isAdmin', 'yes');
+    } else if(input !== null){
+      alert('Password salah.');
+    }
+    // bersihkan ?edit=1 dari address bar biar rapi
+    params.delete('edit');
+    const clean = window.location.pathname + (params.toString() ? '?'+params.toString() : '');
+    window.history.replaceState({}, '', clean);
+  }
+  applyAdminState();
+})();
+
+// interaksi stiker: goyang + gelembung kata + suara pas diklik
+let audioCtx = null;
+function playStickerSound(){
+  if(profile.stickerSound){
+    new Audio(profile.stickerSound).play().catch(()=>{ playBoopSound(); });
+    return;
+  }
+  playBoopSound();
+}
+function playBoopSound(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    const notes = [660, 880, 990]; // nada naik, kesan "boop" ceria
+    notes.forEach((freq, i)=>{
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t = now + i*0.07;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t+0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t+0.15);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t+0.16);
+    });
+  }catch(e){ /* browser tidak dukung audio, abaikan */ }
+}
+const stickerGreetings = ["Hai! 👋","Semangat! 💪","Cek karya di atas ✨","Halo!","Yeay~"];
+const stickerSvg = document.getElementById('stickerSvg');
+const stickerBubble = document.getElementById('stickerBubble');
+let stickerBusy = false;
+stickerSvg.addEventListener('click', ()=>{
+  if(stickerBusy) return;
+  stickerBusy = true;
+  stickerSvg.classList.add('wiggle');
+  stickerBubble.textContent = stickerGreetings[Math.floor(Math.random()*stickerGreetings.length)];
+  stickerBubble.classList.add('show');
+  playStickerSound();
+  setTimeout(()=>{ stickerSvg.classList.remove('wiggle'); stickerBusy = false; }, 600);
+  setTimeout(()=>{ stickerBubble.classList.remove('show'); }, 1600);
+});
+</script>
+</body>
+</html>
